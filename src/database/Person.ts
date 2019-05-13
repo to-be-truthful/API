@@ -6,34 +6,6 @@ import * as jsonwebtoken from "jsonwebtoken";
 import * as mongoose from "mongoose";
 import {TbtAPI} from "../TbtAPI";
 
-/** Manually create the ID if it isn't specified */
-@pre<PersonSchema>("save", async function (next) {
-    if (this._id === undefined || this._id === null) {
-        this._id = new ObjectID();
-    }
-    next();
-})
-
-/** Populate fields automatically  */
-@post<PersonSchema>("find", async docs => {
-    for (const doc of docs) {
-        if (doc === undefined || doc === null) { return; }
-        await doc.populate({
-            path: "friends",
-            model: PersonModel.name
-        }).execPopulate();
-    }
-})
-
-/** Populate fields automatically  */
-@post<PersonSchema>("findOne", async doc => {
-    if (doc === undefined || doc === null) { return; }
-    await doc.populate({
-        path: "friends",
-        model: PersonModel.name
-    }).execPopulate();
-})
-
 export default class PersonSchema extends Typegoose {
     // Fields
     @prop() public _id?: ObjectID; // Document ID
@@ -41,7 +13,7 @@ export default class PersonSchema extends Typegoose {
     @prop() public lastName: string; // Person last name
     @prop() public username: string; // Username
     @prop() public email: string; // Email
-    @arrayProp({itemsRef: PersonSchema}) private friends: Ref<PersonSchema[]>; // Ref of user's friends IDs
+    @arrayProp({itemsRef: PersonSchema}) public friends: Ref<PersonSchema[]>; // Ref of user's friends IDs
 
     @prop() private passwordHash?: string; // Hashed password using bcrypt (salt included)
 
@@ -68,7 +40,7 @@ export default class PersonSchema extends Typegoose {
             token: this.generateToken(),
             email: this.email,
             username: this.username,
-            id: this._id.toHexString()
+            id: this._id
         };
     }
 

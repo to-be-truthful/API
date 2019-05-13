@@ -12,17 +12,6 @@ import PersonSchema, {PersonModel} from "./Person";
     next();
 })
 
-/** Populate fields automatically  */
-@post<NotifSchema>("find", async docs => {
-    for (const doc of docs) {
-        if (doc === undefined || doc === null) { return; }
-        await doc.populate({
-            path: "personTo",
-            model: PersonModel.name
-        }).execPopulate();
-    }
-})
-
 export default class NotifSchema extends Typegoose{
     // Fields
     @prop() public _id?: ObjectID; // Document ID

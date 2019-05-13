@@ -28,7 +28,14 @@ export class AuthMiddleware {
             userProperty: "payload",
             getToken: AuthMiddleware.getToken,
             payloadSanitizer: (payload, callback) => {
-                PersonModel.findById(new ObjectID(payload._id), callback); // We turn our lame ass payload into one with useful stuff
+                console.log("Fired custom payload sanitizer! (" + JSON.stringify(payload) + ")");
+                PersonModel.findById(new ObjectID(payload.id), (err, user) => {
+                    console.log("got user: " + JSON.stringify(user) + ", err: " + err);
+                    if (err) return callback(err, null);
+                    else callback(null, user);
+                }).populate({
+                    path: "friends"
+                }).orFail(); // We turn our lame ass payload into one with useful stuff
             }
         }),
         optional: jwt({

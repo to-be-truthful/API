@@ -9,7 +9,7 @@ import {PersonModel} from "../../../database/Person";
 
 export class AuthController implements IController{
     public initRoutes(expressRouter: Router) {
-        expressRouter.get("/auth/register", [
+        expressRouter.post("/auth/register", [
             check("firstName").isString(),
             check("firstName").isLength({
                 min: 1, max: 50
@@ -28,6 +28,13 @@ export class AuthController implements IController{
                 min: 1, max: 50
             }),
         ], this.register);
+        expressRouter.post("/auth/login", [
+            check("email").isEmail(),
+            check("password").isString(),
+            check("password").isLength({
+                min: 1, max: 50
+            }),
+        ], this.login);
     }
 
     public login = async (req, res, next) => {

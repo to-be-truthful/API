@@ -5,9 +5,16 @@ import * as mongoose from "mongoose";
 import * as configJson from "../config.json";
 import ExpressValidator = require("express-validator");
 import * as bodyParser from "body-parser";
-import {Express, Router} from "express";
+import {Router} from "express";
 import * as http from "http";
 import {Passport} from "./Passport";
+import { PersonModel } from "./database/Person";
+
+import * as Express from "express";
+import {AuthController} from "./api/http/controllers/AuthController";
+import {QuestionController} from "./api/http/controllers/QuestionController";
+import {UnauthorizedError} from "express-jwt";
+import {ValidationError} from "./api/http/ValidationError";
 
 export class TbtAPI {
     static get config(): IConfig {
@@ -19,16 +26,24 @@ export class TbtAPI {
     }
     private static _config: IConfig;
 
-    private _express: Express;
+    private _express: Express.Express;
 
     /** Bootstrap the Tithers API */
     private async bootstrap(): Promise<void>{
         TbtAPI.config = configJson; // Load the JSON into memory
 
-        // Connect to our database
-        await mongoose.connect(TbtAPI.config.database, {
-            useNewUrlParser: true // Was having some weird issues with this disabled
-        });
+        try {
+            await mongoose.connect(
+                TbtAPI.config.database,
+                {useNewUrlParser: true}
+            );
+        } catch (e) {
+            console.log(e);
+            process.exit(1);
+            return;
+        }
+
+        this._express = Express();
 
         // CORS
         this._express.disable("x-powered-by");
@@ -51,9 +66,6 @@ export class TbtAPI {
             next();
         });
 
-        // Mount it
-        this.mountRoutes();
-
         // Body Parser
         this._express.use(bodyParser.urlencoded({extended: false})); // Allow Express to handle json in bodies
         this._express.use(bodyParser.json()); //                                ^
@@ -61,8 +73,22 @@ export class TbtAPI {
         // Validation
         this._express.use(ExpressValidator());
 
-        // TODO: do
-        // Start workers// Configure Passport
+        // Mount it
+        this.mountRoutes();
+
+        // Error handling
+        this._express.use((err, req, res, next) => {
+            console.log("got error");
+            console.log(err);
+            if (err instanceof ValidationError) {
+                res.status(400).json({error: true, message: err.json})
+            } else if (err instanceof UnauthorizedError) {
+                res.status(401).json({error: true, message: "Unauthorized"})
+            } else {
+                res.status(500).json({error: true, message: err.message});
+            }
+        });
+
         Passport.bootstrap();
 
         await this.createHttp();
@@ -80,6 +106,11 @@ export class TbtAPI {
         const router = Router();
 
         // do
+        const authController = new AuthController();
+        authController.initRoutes(router);
+
+        const questionController = new QuestionController();
+        questionController.initRoutes(router);
 
         this._express.use("/api/v1/", router);
     };

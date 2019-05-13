@@ -1,0 +1,47 @@
+{
+  "name": "tithersapi",
+  "version": "1.0.0",
+  "description": "Tithers API",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run:debug": "NODE_ENV=dev DEBUG=* node --inspect -r ts-node/register main.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlecDusheck/Tithers.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/body-parser": "^1.17.0",
+    "@types/express": "^4.16.1",
+    "@types/express-validator": "^3.0.0",
+    "@types/fs-extra": "^5.0.5",
+    "@types/jsonwebtoken": "^8.3.2",
+    "@types/mongoose": "^5.3.24",
+    "@types/node": "^11.13.0",
+    "@types/passport": "^1.0.0",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.15.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.4.1"
+  },
+  "dependencies": {
+    "@types/express-jwt": "git+https://github.com/SimplyServers/express-jwt-types.git",
+    "bcrypt": "^3.0.5",
+    "body-parser": "^1.18.3",
+    "bson": "^4.0.2",
+    "express": "^4.16.4",
+    "express-jwt": "git+https://github.com/SimplyServers/express-jwt.git",
+    "express-validator": "^5.3.1",
+    "fs-extra": "^7.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.4.21",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "typegoose": "^5.6.0",
+    "zxcvbn": "^4.4.2"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "tslint:latest", "tslint-config-prettier" // Implement our latest tslint rules and override them with Prettier
+  ],
+  "rules": { // lmao whoever made the default rules for TsLint might be stupid... js
+    "no-return-await": false,
+    "no-submodule-imports": false,
+    "no-console": false,
+    "no-bitwise": false,
+    "object-literal-sort-keys": false,
+    "no-duplicate-imports": false,
+    "variable-name": false // The worst rule of them all!
+  }
+}

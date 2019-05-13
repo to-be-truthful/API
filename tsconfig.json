@@ -1,0 +1,17 @@
+{
+  "compilerOptions": { // The default compiler options for Typescript are weird af... lets change that
+    "target": "es6", // We're not in the 1990's
+    "module": "commonjs", // We're building for commonjs
+    "outDir": "dist", // Dump everything out in the dist folder
+    "resolveJsonModule": true, // Allow json modules to be included and built
+    "experimentalDecorators": true, // Use decorators for Typegoose
+    "emitDecoratorMetadata": true, // ^
+    "lib": ["es2015"] // Require es2015 for arrow functions and useful other stuff
+  },
+  "include": [
+    "*.ts" // Built add files with .ts
+  ],
+  "exclude": [
+    "node_modules" // Lets not build the thousands of lib files... ok?
+  ]
+}

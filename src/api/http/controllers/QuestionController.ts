@@ -42,7 +42,7 @@ export class QuestionController implements IController{
 
     private getRandomQuestion = async (): Promise<QuestionSchema> => {
         const questions = await QuestionModel.find({}).orFail();
-        return questions[Math.floor(Math.random()*questions.length)];
+        return questions[Math.floor(Math.random() * questions.length)];
     };
 
     private getRandomFriends = (user: PersonSchema): Array<PersonSchema> => {

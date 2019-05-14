@@ -6,6 +6,14 @@ import * as jsonwebtoken from "jsonwebtoken";
 import * as mongoose from "mongoose";
 import {TbtAPI} from "../TbtAPI";
 
+/** Manually create the ID if it isn't specified */
+@pre<PersonSchema>("save", async function (next) {
+    if (this._id === undefined || this._id === null) {
+        this._id = new ObjectID();
+    }
+    next();
+})
+
 export default class PersonSchema extends Typegoose {
     // Fields
     @prop() public _id?: ObjectID; // Document ID
@@ -35,7 +43,7 @@ export default class PersonSchema extends Typegoose {
 
     /** Convert the user to a nice little json object that gets sent to the client  */
     @instanceMethod
-    public toJSON() {
+    public exportData() {
         return {
             token: this.generateToken(),
             email: this.email,
@@ -65,7 +73,9 @@ export default class PersonSchema extends Typegoose {
     @instanceMethod
     public async addFriend(targetID: ObjectID){
         const existingFriends = this.friends as Array<InstanceType<PersonSchema>>;
-        if (existingFriends.find(existingFriend => existingFriend._id === targetID) !== undefined){
+        console.log("existing friends: " + JSON.stringify(existingFriends));
+
+        if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) !== undefined){
             throw new Error("This user is already your friend.");
         }
 

@@ -61,7 +61,7 @@ export class AuthController implements IController{
             console.log("login?");
 
             return res.json({
-                user: user.toJSON()
+                user: user.exportData()
             });
         }catch (e) {
             return next(e);
@@ -138,7 +138,7 @@ export class AuthController implements IController{
             return next(e);
         }
 
-        const userData = newPerson.toJSON();
+        const userData = newPerson.exportData();
         return res.json({
             user: userData
         });

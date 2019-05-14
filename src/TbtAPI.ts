@@ -15,6 +15,7 @@ import {AuthController} from "./api/http/controllers/AuthController";
 import {QuestionController} from "./api/http/controllers/QuestionController";
 import {UnauthorizedError} from "express-jwt";
 import {ValidationError} from "./api/http/ValidationError";
+import {FriendsController} from "./api/http/controllers/FriendsController";
 
 export class TbtAPI {
     static get config(): IConfig {
@@ -111,6 +112,9 @@ export class TbtAPI {
 
         const questionController = new QuestionController();
         questionController.initRoutes(router);
+
+        const friendsController = new FriendsController();
+        friendsController.initRoutes(router);
 
         this._express.use("/api/v1/", router);
     };

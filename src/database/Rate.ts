@@ -1,4 +1,4 @@
-import {post, pre, prop, Ref, Typegoose} from "typegoose";
+import {arrayProp, post, pre, prop, Ref, Typegoose} from "typegoose";
 import {ObjectID} from "bson";
 import PersonSchema, {PersonModel} from "./Person";
 
@@ -17,10 +17,8 @@ export default class RateSchema extends Typegoose{
     // Fields
     @prop() public _id?: ObjectID; // Document ID
     @prop({ref: PersonSchema}) public personFrom: Ref<PersonSchema>;
-    @prop({ref: PersonSchema}) public person1: Ref<PersonSchema>;
-    @prop({ref: PersonSchema}) public person2: Ref<PersonSchema>;
-    @prop({ref: PersonSchema}) public person3: Ref<PersonSchema>;
-    @prop({ref: PersonSchema}) public choice?: Ref<PersonSchema>;
+    @arrayProp({itemsRef: PersonSchema}) public choices: Ref<PersonSchema[]>; // Ref of user's friends IDs
+    @prop({ref: PersonSchema}) public decidedChoice?: Ref<PersonSchema>;
     @prop({ref: QuestionSchema}) public question: Ref<QuestionSchema>;
 }
 

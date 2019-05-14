@@ -1,5 +1,5 @@
 import {ObjectID} from "bson";
-import {arrayProp, instanceMethod, InstanceType, post, pre, prop, Ref, Typegoose} from "typegoose";
+import {arrayProp, instanceMethod, InstanceType, pre, prop, Ref, Typegoose} from "typegoose";
 
 import * as bcrypt from "bcrypt";
 import * as jsonwebtoken from "jsonwebtoken";
@@ -23,7 +23,7 @@ export default class PersonSchema extends Typegoose {
     @prop() public email: string; // Email
     @arrayProp({itemsRef: PersonSchema}) public friends: Ref<PersonSchema[]>; // Ref of user's friends IDs
 
-    @prop() private passwordHash?: string; // Hashed password using bcrypt (salt included)
+    @prop() public passwordHash?: string; // Hashed password using bcrypt (salt included)
 
     // Methods
     /** Set the hashed password to something else  */

@@ -73,7 +73,6 @@ export default class PersonSchema extends Typegoose {
     @instanceMethod
     public async addFriend(targetID: ObjectID){
         const existingFriends = this.friends as Array<InstanceType<PersonSchema>>;
-        console.log("existing friends: " + JSON.stringify(existingFriends));
 
         if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) !== undefined){
             throw new Error("This user is already your friend.");
@@ -82,6 +81,18 @@ export default class PersonSchema extends Typegoose {
         const newFriend = await PersonModel.findById(targetID).orFail(); // Look up new friend in mongoose
         existingFriends.push(newFriend); // Push em to the friends list
         this.friends = existingFriends; // Update the friends list
+    }
+
+    /** Add a users friend */
+    @instanceMethod
+    public async removeFriend(targetID: ObjectID){
+        const existingFriends = this.friends as Array<InstanceType<PersonSchema>>;
+
+        if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) === undefined){
+            throw new Error("This user is not your friend.");
+        }
+
+        this.friends = existingFriends.filter(existingFriend => existingFriend._id.toString() !== targetID.toString());
     }
 }
 

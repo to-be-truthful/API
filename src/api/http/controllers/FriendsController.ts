@@ -11,6 +11,10 @@ export class FriendsController implements IController{
             AuthMiddleware.jwtAuth.required,
             check("userId").isMongoId()
         ], this.addFriend);
+        expressRouter.post("/friends/remove", [
+            AuthMiddleware.jwtAuth.required,
+            check("userId").isMongoId()
+        ], this.removeFriend);
     }
 
     private addFriend = async (req, res, next) => {
@@ -21,6 +25,21 @@ export class FriendsController implements IController{
 
         try{
             await req.payload.addFriend(new ObjectID(req.body.userId));
+            await req.payload.save();
+        }catch (e) {
+            return next(e);
+        }
+        return res.json({});
+    };
+
+    private removeFriend = async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new ValidationError(errors.array()));
+        }
+
+        try{
+            await req.payload.removeFriend(new ObjectID(req.body.userId));
             await req.payload.save();
         }catch (e) {
             return next(e);

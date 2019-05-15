@@ -11,7 +11,7 @@ import * as mongoose from "mongoose";
     next();
 })
 
-export default class QuestionSchema extends Typegoose{
+export default class QuestionSchema extends Typegoose {
     // Fields
     @prop() public _id?: ObjectID; // Document ID
     @prop() public questionText: string;

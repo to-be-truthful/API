@@ -1,13 +1,13 @@
 import {ObjectID} from "bson";
-import jwt = require("express-jwt");
 import {PersonModel} from "../../../database/Person";
 import {TbtAPI} from "../../../TbtAPI";
+import jwt = require("express-jwt");
 
 export class AuthMiddleware {
 
     private static getToken = (req: any) => {
         const {
-            headers: { authorization }
+            headers: {authorization}
         } = req;
 
         if (authorization && authorization.split(" ")[0] === "Token") {

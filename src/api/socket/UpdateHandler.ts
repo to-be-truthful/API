@@ -9,7 +9,7 @@ export class UpdateHandler {
 
     private updateSocket: any;
 
-    constructor(io: any){
+    constructor(io: any) {
         this.updateSocket = io.of("/liveupdate");
 
         this.updateSocket.on("connection", socketJwt.authorize({
@@ -33,7 +33,7 @@ export class UpdateHandler {
             socket.on("disconnect", () => {
                 UpdateHandler.activeUsers.delete(user);
             });
-        }catch (e) {
+        } catch (e) {
             socket.emit("error", e);
             socket.disconnect();
             return;

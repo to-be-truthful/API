@@ -1,8 +1,8 @@
-import {post, pre, prop, Ref, Typegoose} from "typegoose";
+import {pre, prop, Ref, Typegoose} from "typegoose";
 import {ObjectID} from "bson";
 
 import * as mongoose from "mongoose";
-import PersonSchema, {PersonModel} from "./Person";
+import PersonSchema from "./Person";
 
 /** Manually create the ID if it isn't specified */
 @pre<NotifSchema>("save", async function (next) {
@@ -12,10 +12,10 @@ import PersonSchema, {PersonModel} from "./Person";
     next();
 })
 
-export default class NotifSchema extends Typegoose{
+export default class NotifSchema extends Typegoose {
     // Fields
     @prop() public _id?: ObjectID; // Document ID
-    @prop({ ref: PersonSchema }) public personTo: Ref<PersonSchema>;
+    @prop({ref: PersonSchema}) public personTo: Ref<PersonSchema>;
     @prop() public text: string;
 }
 

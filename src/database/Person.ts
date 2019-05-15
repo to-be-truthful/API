@@ -36,7 +36,9 @@ export default class PersonSchema extends Typegoose {
     /** Validate the users password  */
     @instanceMethod
     public async validatePassword(password: string) {
-        if(!this.passwordHash) { return false; } // The password isn't filled out yet
+        if (!this.passwordHash) {
+            return false;
+        } // The password isn't filled out yet
 
         return await bcrypt.compare(password, this.passwordHash);
     }
@@ -71,10 +73,10 @@ export default class PersonSchema extends Typegoose {
 
     /** Add a users friend */
     @instanceMethod
-    public async addFriend(targetID: ObjectID){
+    public async addFriend(targetID: ObjectID) {
         const existingFriends = this.friends as Array<InstanceType<PersonSchema>>;
 
-        if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) !== undefined){
+        if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) !== undefined) {
             throw new Error("This user is already your friend.");
         }
 
@@ -85,10 +87,10 @@ export default class PersonSchema extends Typegoose {
 
     /** Add a users friend */
     @instanceMethod
-    public async removeFriend(targetID: ObjectID){
+    public async removeFriend(targetID: ObjectID) {
         const existingFriends = this.friends as Array<InstanceType<PersonSchema>>;
 
-        if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) === undefined){
+        if (existingFriends.find(existingFriend => existingFriend._id.toString() === targetID.toString()) === undefined) {
             throw new Error("This user is not your friend.");
         }
 

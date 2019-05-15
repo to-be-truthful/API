@@ -1,6 +1,6 @@
-import {arrayProp, post, pre, prop, Ref, Typegoose} from "typegoose";
+import {arrayProp, pre, prop, Ref, Typegoose} from "typegoose";
 import {ObjectID} from "bson";
-import PersonSchema, {PersonModel} from "./Person";
+import PersonSchema from "./Person";
 
 import * as mongoose from "mongoose";
 import QuestionSchema from "./Question";
@@ -13,7 +13,7 @@ import QuestionSchema from "./Question";
     next();
 })
 
-export default class RateSchema extends Typegoose{
+export default class RateSchema extends Typegoose {
     // Fields
     @prop() public _id?: ObjectID; // Document ID
     @prop({ref: PersonSchema}) public personFrom: Ref<PersonSchema>;

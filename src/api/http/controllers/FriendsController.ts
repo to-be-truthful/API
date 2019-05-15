@@ -5,7 +5,7 @@ import {ValidationError} from "../ValidationError";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {ObjectID} from "bson";
 
-export class FriendsController implements IController{
+export class FriendsController implements IController {
     initRoutes(expressRouter: Router) {
         expressRouter.post("/friends/add", [
             AuthMiddleware.jwtAuth.required,
@@ -23,10 +23,10 @@ export class FriendsController implements IController{
             return next(new ValidationError(errors.array()));
         }
 
-        try{
+        try {
             await req.payload.addFriend(new ObjectID(req.body.userId));
             await req.payload.save();
-        }catch (e) {
+        } catch (e) {
             return next(e);
         }
         return res.json({});
@@ -38,10 +38,10 @@ export class FriendsController implements IController{
             return next(new ValidationError(errors.array()));
         }
 
-        try{
+        try {
             await req.payload.removeFriend(new ObjectID(req.body.userId));
             await req.payload.save();
-        }catch (e) {
+        } catch (e) {
             return next(e);
         }
         return res.json({});

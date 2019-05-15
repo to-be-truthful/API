@@ -2,16 +2,16 @@ import {IController} from "./IController";
 import {Router} from "express";
 import PersonSchema from "../../../database/Person";
 import QuestionSchema, {QuestionModel} from "../../../database/Question";
-import { RateModel } from "../../../database/Rate";
+import {RateModel} from "../../../database/Rate";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {check, validationResult} from "express-validator/check";
 import {ValidationError} from "../ValidationError";
 import {ObjectId} from "bson";
 
-export class QuestionController implements IController{
+export class QuestionController implements IController {
     initRoutes(expressRouter: Router) {
-        expressRouter.get("/rate/getNew", [ AuthMiddleware.jwtAuth.required ], this.getRate);
-        expressRouter.get("/rate/feed", [ AuthMiddleware.jwtAuth.required ], this.getFeed);
+        expressRouter.get("/rate/getNew", [AuthMiddleware.jwtAuth.required], this.getRate);
+        expressRouter.get("/rate/feed", [AuthMiddleware.jwtAuth.required], this.getFeed);
         expressRouter.post("/rate/finish", [
             AuthMiddleware.jwtAuth.required,
             check("rateId").isMongoId(),
@@ -40,9 +40,9 @@ export class QuestionController implements IController{
             .limit(500) // We don't need more then 500 posts lmao
             .sort({ // Sort by time posted, descending
                 date: -1
-            })
+            });
 
-        return res.json({ rates });
+        return res.json({rates});
     };
 
     private rate = async (req, res, next) => {
@@ -54,18 +54,18 @@ export class QuestionController implements IController{
         try {
             const unfinishedRate = await RateModel.findById(new ObjectId(req.body.rateId)).populate("choices personFrom").orFail();
 
-            if(unfinishedRate._id !== req.payload._id || unfinishedRate.decidedChoice){
+            if (unfinishedRate._id !== req.payload._id || unfinishedRate.decidedChoice) {
                 return next(new Error("You do not have access to this rate"));
             }
 
             const choice = (unfinishedRate.choices as Array<PersonSchema>).find(person => person._id.toString() === req.body.choiceId.toString());
-            if(!choice){
+            if (!choice) {
                 return next(new Error("Invalid choice"));
             }
 
             unfinishedRate.decidedChoice = choice;
             await unfinishedRate.save();
-        }catch (e) {
+        } catch (e) {
             return next(e);
         }
 
@@ -75,12 +75,12 @@ export class QuestionController implements IController{
     private getRate = async (req, res, next) => {
         await req.payload.populate({
             path: "friends",
-            select: { "email": 0, "passwordHash": 0 }
+            select: {"email": 0, "passwordHash": 0}
         }).execPopulate();
 
         const friends = this.getRandomFriends(req.payload);
 
-        if (!friends){
+        if (!friends) {
             return next(new Error("You do not have enough friends."));
         }
 
@@ -101,7 +101,7 @@ export class QuestionController implements IController{
             return res.json({
                 question: newRate
             })
-        }catch (e) {
+        } catch (e) {
             return next(e);
         }
     };
@@ -119,6 +119,6 @@ export class QuestionController implements IController{
         if (friends.length <= 4) return undefined;
 
         const shuffled = friends.sort(() => 0.5 - Math.random());
-        return  shuffled.slice(0, 3);
+        return shuffled.slice(0, 3);
     }
 }

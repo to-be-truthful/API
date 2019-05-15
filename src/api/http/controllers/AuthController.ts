@@ -7,7 +7,7 @@ import {check, validationResult} from "express-validator/check";
 import {ValidationError} from "../ValidationError";
 import {PersonModel} from "../../../database/Person";
 
-export class AuthController implements IController{
+export class AuthController implements IController {
     public initRoutes(expressRouter: Router) {
         expressRouter.post("/auth/register", [
             check("firstName").isString(),
@@ -43,27 +43,33 @@ export class AuthController implements IController{
             return next(new ValidationError(errors.array()));
         }
 
-        try{
+        try {
             const user: any = await new Promise((resolve, reject) => {
-                console.log("ub")
+                console.log("ub");
                 passport.authenticate("local", {
                     session: false
                 }, (err, passportUser) => {
-                    console.log("heeeelloo")
-                    if (err) { return reject(err); }
-                    else if (passportUser) { return resolve(passportUser); }
-                    else { return reject(new Error("Failed to authenticate.")); }
-                })(req,res,next);
+                    console.log("heeeelloo");
+                    if (err) {
+                        return reject(err);
+                    } else if (passportUser) {
+                        return resolve(passportUser);
+                    } else {
+                        return reject(new Error("Failed to authenticate."));
+                    }
+                })(req, res, next);
             });
 
-            if(!user){ return next(new Error("Failed to authenticate.")); }
+            if (!user) {
+                return next(new Error("Failed to authenticate."));
+            }
 
             console.log("login?");
 
             return res.json({
                 user: user.exportData()
             });
-        }catch (e) {
+        } catch (e) {
             return next(e);
         }
     };
@@ -123,7 +129,7 @@ export class AuthController implements IController{
         }
 
         const newPerson = new PersonModel({
-           firstName: req.body.firstName,
+            firstName: req.body.firstName,
             lastName: req.body.lastName,
             username: req.body.username,
             email: req.body.email,
@@ -132,7 +138,7 @@ export class AuthController implements IController{
 
         await newPerson.setPassword(req.body.password);
 
-        try{
+        try {
             await newPerson.save();
         } catch (e) {
             return next(e);

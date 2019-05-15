@@ -2,12 +2,11 @@ import {IConfig} from "./IConfig";
 
 import * as mongoose from "mongoose";
 import * as configJson from "../config.json";
-import ExpressValidator = require("express-validator");
 import * as bodyParser from "body-parser";
+import * as Express from "express";
 import {Router} from "express";
 import * as http from "http";
 import {Passport} from "./Passport";
-import * as Express from "express";
 import * as SocketIO from "socket.io";
 import {AuthController} from "./api/http/controllers/AuthController";
 import {QuestionController} from "./api/http/controllers/QuestionController";
@@ -16,8 +15,17 @@ import {ValidationError} from "./api/http/ValidationError";
 import {FriendsController} from "./api/http/controllers/FriendsController";
 import {UpdateHandler} from "./api/socket/UpdateHandler";
 import {RemovalHelper} from "./helpers/RemovalHelper";
+import ExpressValidator = require("express-validator");
 
 export class TbtAPI {
+    private _express: Express.Express;
+
+    constructor() {
+        this.bootstrap(); // Call the *async* bootstrap function
+    }
+
+    private static _config: IConfig;
+
     static get config(): IConfig {
         return this._config;
     }
@@ -25,12 +33,9 @@ export class TbtAPI {
     static set config(value: IConfig) {
         this._config = value;
     }
-    private static _config: IConfig;
-
-    private _express: Express.Express;
 
     /** Bootstrap the Tithers API */
-    private async bootstrap(): Promise<void>{
+    private async bootstrap(): Promise<void> {
         TbtAPI.config = configJson; // Load the JSON into memory
 
         // Init helpers
@@ -52,6 +57,7 @@ export class TbtAPI {
         // CORS
         this._express.disable("x-powered-by");
         this._express.use((req, res, next) => {
+            res.header("X-Made-By", "Alec Dusheck, Sam Martin");
             res.header("Access-Control-Allow-Origin", "*");
             res.header(
                 "Access-Control-Allow-Headers",
@@ -128,8 +134,4 @@ export class TbtAPI {
 
         this._express.use("/api/v1/", router);
     };
-
-    constructor(){
-        this.bootstrap(); // Call the *async* bootstrap function
-    }
 }

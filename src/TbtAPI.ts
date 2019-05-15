@@ -1,21 +1,20 @@
 import {IConfig} from "./IConfig";
 
 import * as mongoose from "mongoose";
-
 import * as configJson from "../config.json";
 import ExpressValidator = require("express-validator");
 import * as bodyParser from "body-parser";
 import {Router} from "express";
 import * as http from "http";
 import {Passport} from "./Passport";
-import { PersonModel } from "./database/Person";
-
 import * as Express from "express";
+import * as SocketIO from "socket.io";
 import {AuthController} from "./api/http/controllers/AuthController";
 import {QuestionController} from "./api/http/controllers/QuestionController";
 import {UnauthorizedError} from "express-jwt";
 import {ValidationError} from "./api/http/ValidationError";
 import {FriendsController} from "./api/http/controllers/FriendsController";
+import {UpdateHandler} from "./api/socket/UpdateHandler";
 
 export class TbtAPI {
     static get config(): IConfig {
@@ -98,6 +97,13 @@ export class TbtAPI {
 
     private createHttp = async (): Promise<void> => {
         const httpServer = http.createServer(this._express);
+
+        // Create SocketServer
+        const io = SocketIO(httpServer, {
+            path: "/s"
+        });
+
+        new UpdateHandler(io);
 
         // Listen on the HTTP/HTTPS port
         httpServer.listen(TbtAPI.config.ports.http);

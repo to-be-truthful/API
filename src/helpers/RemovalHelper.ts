@@ -3,7 +3,7 @@ import {RateModel} from "../database/Rate";
 
 export class RemovalHelper implements IHelper{
     constructor(){
-        setInterval(this.run, 2 * 1000)
+        setInterval(this.run, 60 * 60 * 1000)
     }
 
     run = () => {

@@ -6,10 +6,12 @@ import * as zxcvbn from "zxcvbn";
 import {check, validationResult} from "express-validator/check";
 import {ValidationError} from "../ValidationError";
 import {PersonModel} from "../../../database/Person";
+import {RateModel} from "../../../database/Rate";
+import {AuthMiddleware} from "../middleware/AuthMiddleware";
 
-export class AuthController implements IController {
+export class UserController implements IController {
     public initRoutes(expressRouter: Router) {
-        expressRouter.post("/auth/register", [
+        expressRouter.post("/user/register", [
             check("firstName").isString(),
             check("firstName").isLength({
                 min: 1, max: 50
@@ -28,13 +30,15 @@ export class AuthController implements IController {
                 min: 1, max: 50
             }),
         ], this.register);
-        expressRouter.post("/auth/login", [
+        expressRouter.post("/user/login", [
             check("email").isEmail(),
             check("password").isString(),
             check("password").isLength({
                 min: 1, max: 50
             }),
         ], this.login);
+        expressRouter.get("/user/feed", [AuthMiddleware.jwtAuth.required], this.getFeed);
+
     }
 
     public login = async (req, res, next) => {
@@ -148,5 +152,31 @@ export class AuthController implements IController {
         return res.json({
             user: userData
         });
+    };
+
+    private getFeed = async (req, res, next) => {
+        let startTime = new Date();
+        startTime.setDate(startTime.getDate() - 1);
+
+        let endTime = new Date(Date.now());
+
+        const rates = await RateModel
+            .find({
+                decidedChoice: req.payload,
+                date: {
+                    "$gte": startTime,
+                    "$lt": endTime
+                }
+            }, {
+                choices: 0,
+                personFrom: 0
+            })
+            .populate("question")
+            .limit(500) // We don't need more then 500 posts lmao
+            .sort({ // Sort by time posted, descending
+                date: -1
+            });
+
+        return res.json({rates});
     };
 }

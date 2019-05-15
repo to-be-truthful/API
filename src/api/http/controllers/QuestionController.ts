@@ -11,39 +11,12 @@ import {ObjectId} from "bson";
 export class QuestionController implements IController {
     initRoutes(expressRouter: Router) {
         expressRouter.get("/rate/getNew", [AuthMiddleware.jwtAuth.required], this.getRate);
-        expressRouter.get("/rate/feed", [AuthMiddleware.jwtAuth.required], this.getFeed);
         expressRouter.post("/rate/finish", [
             AuthMiddleware.jwtAuth.required,
             check("rateId").isMongoId(),
             check("choiceId").isMongoId()
         ], this.rate);
     }
-
-    private getFeed = async (req, res, next) => {
-        let startTime = new Date();
-        startTime.setDate(startTime.getDate() - 1);
-
-        let endTime = new Date(Date.now());
-
-        const rates = await RateModel
-            .find({
-                decidedChoice: req.payload,
-                date: {
-                    "$gte": startTime,
-                    "$lt": endTime
-                }
-            }, {
-                choices: 0,
-                personFrom: 0
-            })
-            .populate("question")
-            .limit(500) // We don't need more then 500 posts lmao
-            .sort({ // Sort by time posted, descending
-                date: -1
-            });
-
-        return res.json({rates});
-    };
 
     private rate = async (req, res, next) => {
         const errors = validationResult(req);

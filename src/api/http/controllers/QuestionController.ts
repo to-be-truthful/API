@@ -7,6 +7,7 @@ import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {check, validationResult} from "express-validator/check";
 import {ValidationError} from "../ValidationError";
 import {ObjectId} from "bson";
+import {UpdateHandler} from "../../socket/UpdateHandler";
 
 export class QuestionController implements IController {
     initRoutes(expressRouter: Router) {
@@ -38,6 +39,7 @@ export class QuestionController implements IController {
 
             unfinishedRate.decidedChoice = choice;
             await unfinishedRate.save();
+            await UpdateHandler.pushUpdate(choice);
         } catch (e) {
             return next(e);
         }

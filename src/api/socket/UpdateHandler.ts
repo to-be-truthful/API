@@ -19,7 +19,7 @@ export class UpdateHandler {
             .on("authenticated", this.onAuth);
     }
 
-    public pushUpdate = async (user: PersonSchema) => {
+    public static pushUpdate = async (user: PersonSchema) => {
         if (!UpdateHandler.activeUsers.has(user._id)) return; // No need, the user somehow isn't in the active users list.
         const socket = UpdateHandler.activeUsers.get(user._id);
         socket.emit("update");

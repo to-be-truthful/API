@@ -5,7 +5,7 @@ import {ValidationError} from "../ValidationError";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {ObjectID} from "bson";
 import {NotifModel} from "../../../database/Notif";
-import {PersonModel} from "../../../database/Person";
+import {UpdateHandler} from "../../socket/UpdateHandler";
 
 export class FriendsController implements IController {
     initRoutes(expressRouter: Router) {
@@ -36,6 +36,7 @@ export class FriendsController implements IController {
             });
 
             await friendAddedNotif.save();
+            await UpdateHandler.pushUpdate(targetFriend);
         } catch (e) {
             return next(e);
         }

@@ -17,6 +17,7 @@ export default class NotifSchema extends Typegoose {
     @prop() public _id?: ObjectID; // Document ID
     @prop({ref: PersonSchema}) public personTo: Ref<PersonSchema>;
     @prop() public text: string;
+    @prop() public shown: boolean
 }
 
 /** Export the mongoose model  */

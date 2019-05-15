@@ -8,6 +8,7 @@ import {ValidationError} from "../ValidationError";
 import {PersonModel} from "../../../database/Person";
 import {RateModel} from "../../../database/Rate";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
+import {NotifModel} from "../../../database/Notif";
 
 export class UserController implements IController {
     public initRoutes(expressRouter: Router) {
@@ -160,23 +161,46 @@ export class UserController implements IController {
 
         let endTime = new Date(Date.now());
 
-        const rates = await RateModel
-            .find({
-                decidedChoice: req.payload,
-                date: {
-                    "$gte": startTime,
-                    "$lt": endTime
-                }
-            }, {
-                choices: 0,
-                personFrom: 0
-            })
-            .populate("question")
-            .limit(500) // We don't need more then 500 posts lmao
-            .sort({ // Sort by time posted, descending
-                date: -1
+        try {
+            const rates = await RateModel
+                .find({
+                    decidedChoice: req.payload,
+                    date: {
+                        "$gte": startTime,
+                        "$lt": endTime
+                    }
+                }, {
+                    choices: 0,
+                    personFrom: 0
+                })
+                .populate("question")
+                .limit(500) // We don't need more then 500 posts lmao
+                .sort({ // Sort by time posted, descending
+                    date: -1
+                });
+
+                // const notifs = await NotifModel.updateMany({ Ugh. UpdateMany doesn't return the documents updated D: sad....
+                //     shown: false,
+                //     personTo: req.payload._id
+                // }, {
+                //     shown: true
+                // });
+
+            const notifs = await NotifModel.find({
+                shown: false,
+                personTo: req.payload._id
             });
 
-        return res.json({rates});
+            await Promise.all(
+                notifs.map(async notif => {
+                    notif.shown = true;
+                    await notif.save();
+                })
+            );
+
+            return res.json({rates, notifs});
+        }catch (e) {
+            return next(e);
+        }
     };
 }

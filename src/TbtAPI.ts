@@ -8,7 +8,7 @@ import {Router} from "express";
 import * as http from "http";
 import {Passport} from "./Passport";
 import * as SocketIO from "socket.io";
-import {AuthController} from "./api/http/controllers/AuthController";
+import {UserController} from "./api/http/controllers/UserController";
 import {QuestionController} from "./api/http/controllers/QuestionController";
 import {UnauthorizedError} from "express-jwt";
 import {ValidationError} from "./api/http/ValidationError";
@@ -123,8 +123,8 @@ export class TbtAPI {
         const router = Router();
 
         // do
-        const authController = new AuthController();
-        authController.initRoutes(router);
+        const userController = new UserController();
+        userController.initRoutes(router);
 
         const questionController = new QuestionController();
         questionController.initRoutes(router);

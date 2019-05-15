@@ -20,6 +20,7 @@ export default class RateSchema extends Typegoose{
     @arrayProp({itemsRef: PersonSchema}) public choices: Ref<PersonSchema[]>; // Ref of user's friends IDs
     @prop({ref: PersonSchema}) public decidedChoice?: Ref<PersonSchema>;
     @prop({ref: QuestionSchema}) public question: Ref<QuestionSchema>;
+    @prop() public date: Date
 }
 
 /** Export the mongoose model  */

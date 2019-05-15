@@ -27,7 +27,7 @@ export class QuestionController implements IController{
         try {
             const unfinishedRate = await RateModel.findById(new ObjectId(req.body.rateId)).populate("choices personFrom").orFail();
 
-            if(unfinishedRate._id !== req.payload._id){
+            if(unfinishedRate._id !== req.payload._id || unfinishedRate.decidedChoice){
                 return next(new Error("You do not have access to this rate"));
             }
 
@@ -63,7 +63,8 @@ export class QuestionController implements IController{
             const newRate = new RateModel({
                 personFrom: req.payload,
                 choices: friends,
-                question: await this.getRandomQuestion()
+                question: await this.getRandomQuestion(),
+                date: new Date()
             });
 
             await newRate.save();

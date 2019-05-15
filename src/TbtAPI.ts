@@ -15,6 +15,7 @@ import {UnauthorizedError} from "express-jwt";
 import {ValidationError} from "./api/http/ValidationError";
 import {FriendsController} from "./api/http/controllers/FriendsController";
 import {UpdateHandler} from "./api/socket/UpdateHandler";
+import {RemovalHelper} from "./helpers/RemovalHelper";
 
 export class TbtAPI {
     static get config(): IConfig {
@@ -31,6 +32,9 @@ export class TbtAPI {
     /** Bootstrap the Tithers API */
     private async bootstrap(): Promise<void>{
         TbtAPI.config = configJson; // Load the JSON into memory
+
+        // Init helpers
+        new RemovalHelper();
 
         try {
             await mongoose.connect(

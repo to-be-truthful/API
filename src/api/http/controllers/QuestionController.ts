@@ -67,7 +67,8 @@ export class QuestionController implements IController {
                 personFrom: req.payload,
                 choices: friends,
                 question: await this.getRandomQuestion(),
-                date: new Date()
+                date: new Date(),
+                shown: false
             });
 
             await newRate.save(); // Save it

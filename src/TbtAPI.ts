@@ -16,6 +16,7 @@ import {FriendsController} from "./api/http/controllers/FriendsController";
 import {UpdateHandler} from "./api/socket/UpdateHandler";
 import {RemovalHelper} from "./helpers/RemovalHelper";
 import ExpressValidator = require("express-validator");
+import {ProfileController} from "./api/http/controllers/ProfileController";
 
 export class TbtAPI {
     private _express: Express.Express;
@@ -51,6 +52,8 @@ export class TbtAPI {
             process.exit(1);
             return;
         }
+
+        console.log("Made connection to MongoDB");
 
         this._express = Express();
 
@@ -117,6 +120,7 @@ export class TbtAPI {
 
         // Listen on the HTTP/HTTPS port
         httpServer.listen(TbtAPI.config.ports.http);
+        console.log("Listening on :" + TbtAPI.config.ports.http)
     };
 
     private mountRoutes = (): void => {
@@ -130,6 +134,9 @@ export class TbtAPI {
 
         const friendsController = new FriendsController();
         friendsController.initRoutes(router);
+
+        const profileController = new ProfileController();
+        profileController.initRoutes(router);
 
         this._express.use("/api/v1/", router);
     };

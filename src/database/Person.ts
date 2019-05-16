@@ -45,13 +45,20 @@ export default class PersonSchema extends Typegoose {
 
     /** Convert the user to a nice little json object that gets sent to the client  */
     @instanceMethod
-    public exportData() {
-        return {
-            token: this.generateToken(),
+    public exportData(exportToken?: boolean) {
+        const data = {
             email: this.email,
             username: this.username,
+            firstName: this.firstName,
+            lastName: this.lastName,
             id: this._id
         };
+
+        if (exportToken){
+            data["token"] = this.generateToken();
+        }
+
+        return data;
     }
 
     /** Generate the JWT to verify their identity  */
@@ -65,6 +72,8 @@ export default class PersonSchema extends Typegoose {
                 id: this._id,
                 email: this.email,
                 username: this.username,
+                firstName: this.firstName,
+                lastName: this.lastName,
                 exp: parseInt((expirationDate.getTime() / 1000).toString(), 10)
             },
             TbtAPI.config.jwtSecret

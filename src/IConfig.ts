@@ -3,7 +3,6 @@ export interface IConfig {
     database: string,
     ports: {
         http: number,
-        https: number
     },
     host: string
 }

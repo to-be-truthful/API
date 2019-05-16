@@ -192,7 +192,7 @@ export class UserController implements IController {
                 personTo: req.payload._id
             });
 
-            if (notifs.length > 0){ // If we had some, set them to seen
+            if (notifs.length > 0) { // If we had some, set them to seen
                 await NotifModel.updateMany({
                     shown: false,
                     personTo: req.payload._id
@@ -202,7 +202,7 @@ export class UserController implements IController {
             }
 
             return res.json({rates, notifs}); // Return
-        }catch (e) {
+        } catch (e) {
             return next(e);
         }
     };

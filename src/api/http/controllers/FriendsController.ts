@@ -26,17 +26,19 @@ export class FriendsController implements IController {
         }
 
         try {
+            // Try to add the friend (it will return the friend schema if it worked)
             const targetFriend = await req.payload.addFriend(new ObjectID(req.body.userId));
-            await req.payload.save();
+            await req.payload.save(); // Save the user
 
+            // Send the target person a notif that someone added them
             const friendAddedNotif = new NotifModel({
                 personTo: targetFriend,
                 text: req.payload.firstName + " " + req.payload.lastName + " has added you as a friend!",
                 shown: false
             });
 
-            await friendAddedNotif.save();
-            await UpdateHandler.pushUpdate(targetFriend);
+            await friendAddedNotif.save(); // Save the notif
+            await UpdateHandler.pushUpdate(targetFriend); // Alert the user if they're online
         } catch (e) {
             return next(e);
         }
@@ -50,8 +52,9 @@ export class FriendsController implements IController {
         }
 
         try {
+            // Try to remove the friend
             await req.payload.removeFriend(new ObjectID(req.body.userId));
-            await req.payload.save();
+            await req.payload.save(); // Save user profile
         } catch (e) {
             return next(e);
         }

@@ -49,12 +49,11 @@ export class UserController implements IController {
         }
 
         try {
+            // Try to login using Passport
             const user: any = await new Promise((resolve, reject) => {
-                console.log("ub");
                 passport.authenticate("local", {
                     session: false
                 }, (err, passportUser) => {
-                    console.log("heeeelloo");
                     if (err) {
                         return reject(err);
                     } else if (passportUser) {
@@ -65,11 +64,10 @@ export class UserController implements IController {
                 })(req, res, next);
             });
 
+            // If the user doesn't exist due to invalid credentials, return
             if (!user) {
                 return next(new Error("Failed to authenticate."));
             }
-
-            console.log("login?");
 
             return res.json({
                 user: user.exportData()
@@ -85,6 +83,7 @@ export class UserController implements IController {
             return next(new ValidationError(errors.array()));
         }
 
+        // Make sure their password is decent
         const passwordResults = zxcvbn(req.body.password);
         if (passwordResults.score < 2) {
             return next(
@@ -96,6 +95,7 @@ export class UserController implements IController {
             );
         }
 
+        // Make sure that the username/email don't already exist.
         let existingUsers;
         try {
             existingUsers = await PersonModel.find({
@@ -133,6 +133,7 @@ export class UserController implements IController {
             return next(new ValidationError("Value already exists"));
         }
 
+        // Make the new person
         const newPerson = new PersonModel({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -141,6 +142,7 @@ export class UserController implements IController {
             friends: []
         });
 
+        // Update the users password
         await newPerson.setPassword(req.body.password);
 
         try {
@@ -149,6 +151,7 @@ export class UserController implements IController {
             return next(e);
         }
 
+        // Get the user JSON (including JWT token) and return it
         const userData = newPerson.exportData();
         return res.json({
             user: userData
@@ -156,9 +159,8 @@ export class UserController implements IController {
     };
 
     private getFeed = async (req, res, next) => {
-        let startTime = new Date();
-        startTime.setDate(startTime.getDate() - 1);
-
+        let startTime = new Date(); // Make sure that we don't show posts more then 5 days old
+        startTime.setDate(startTime.getDate() - 5);
         let endTime = new Date(Date.now());
 
         try {
@@ -173,25 +175,24 @@ export class UserController implements IController {
                     choices: 0,
                     personFrom: 0
                 })
-                .populate("question")
                 .limit(500) // We don't need more then 500 posts lmao
                 .sort({ // Sort by time posted, descending
                     date: -1
                 });
 
-            await RateModel.updateMany({
+            await RateModel.updateMany({ // Tag all rates as shown
                 decidedChoice: req.payload,
                 shown: false
             }, {
                 shown: true
             });
 
-            const notifs = await NotifModel.find({
+            const notifs = await NotifModel.find({ // Get all unshown notifs
                 shown: false,
                 personTo: req.payload._id
             });
 
-            if (notifs.length > 0){
+            if (notifs.length > 0){ // If we had some, set them to seen
                 await NotifModel.updateMany({
                     shown: false,
                     personTo: req.payload._id
@@ -200,7 +201,7 @@ export class UserController implements IController {
                 })
             }
 
-            return res.json({rates, notifs});
+            return res.json({rates, notifs}); // Return
         }catch (e) {
             return next(e);
         }

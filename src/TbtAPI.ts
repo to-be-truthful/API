@@ -122,7 +122,6 @@ export class TbtAPI {
     private mountRoutes = (): void => {
         const router = Router();
 
-        // do
         const userController = new UserController();
         userController.initRoutes(router);
 

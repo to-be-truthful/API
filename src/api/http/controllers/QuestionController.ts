@@ -26,20 +26,23 @@ export class QuestionController implements IController {
         }
 
         try {
+            // Get the unfinished rate
             const unfinishedRate = await RateModel.findById(new ObjectId(req.body.rateId)).populate("choices personFrom").orFail();
 
-            if (unfinishedRate._id !== req.payload._id || unfinishedRate.decidedChoice) {
+            // If the user isn't the owner or the rate is already complete, throw an error
+            if ((unfinishedRate.personFrom as PersonSchema)._id !== req.payload._id || unfinishedRate.decidedChoice) {
                 return next(new Error("You do not have access to this rate"));
             }
 
+            // Get the user they selected
             const choice = (unfinishedRate.choices as Array<PersonSchema>).find(person => person._id.toString() === req.body.choiceId.toString());
-            if (!choice) {
+            if (!choice) { // Make sure it wasn't an invalid choice
                 return next(new Error("Invalid choice"));
             }
 
-            unfinishedRate.decidedChoice = choice;
-            await unfinishedRate.save();
-            await UpdateHandler.pushUpdate(choice);
+            unfinishedRate.decidedChoice = choice; // Update the decided person
+            await unfinishedRate.save(); // Save the model
+            await UpdateHandler.pushUpdate(choice); // Alert the chosen person if they're online
         } catch (e) {
             return next(e);
         }
@@ -48,26 +51,26 @@ export class QuestionController implements IController {
     };
 
     private getRate = async (req, res, next) => {
-        await req.payload.populate({
+        await req.payload.populate({ // We will need to get the users friends
             path: "friends",
             select: {"email": 0, "passwordHash": 0}
         }).execPopulate();
 
-        const friends = this.getRandomFriends(req.payload);
+        const friends = this.getRandomFriends(req.payload); // Get 3 random friends
 
-        if (!friends) {
+        if (!friends) { // Make sure they actually have enough friends
             return next(new Error("You do not have enough friends."));
         }
 
         try {
-            const newRate = new RateModel({
+            const newRate = new RateModel({ // Make the new rate
                 personFrom: req.payload,
                 choices: friends,
                 question: await this.getRandomQuestion(),
                 date: new Date()
             });
 
-            await newRate.save();
+            await newRate.save(); // Save it
 
             // Remove hash and email!!!
             (newRate.personFrom as PersonSchema).passwordHash = undefined;
@@ -83,17 +86,17 @@ export class QuestionController implements IController {
 
 
     private getRandomQuestion = async (): Promise<QuestionSchema> => {
-        const questions = await QuestionModel.find({}).orFail();
+        const questions = await QuestionModel.find({}).orFail(); // Get all the questions in the db
 
-        return questions[Math.floor(Math.random() * questions.length)];
+        return questions[Math.floor(Math.random() * questions.length)]; // Get a random one
     };
 
     private getRandomFriends = (user: PersonSchema): Array<PersonSchema> => {
         const friends = user.friends as Array<PersonSchema>;
 
-        if (friends.length <= 4) return undefined;
+        if (friends.length <= 4) return undefined; // Make sure the user has 5+ friends
 
-        const shuffled = friends.sort(() => 0.5 - Math.random());
+        const shuffled = friends.sort(() => 0.5 - Math.random()); // Shuffle the list and return 3 of them
         return shuffled.slice(0, 3);
     }
 }

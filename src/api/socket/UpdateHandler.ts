@@ -27,9 +27,11 @@ export class UpdateHandler {
 
     public onAuth = async (socket) => {
         try {
+            // Get the user and add their socket to the activeUsers map
             const user = await PersonModel.findById(new ObjectID(socket.decoded_token.id)).orFail();
             UpdateHandler.activeUsers.set(user._id, socket);
 
+            // Remove them on disconnect
             socket.on("disconnect", () => {
                 UpdateHandler.activeUsers.delete(user);
             });

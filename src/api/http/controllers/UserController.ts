@@ -179,24 +179,26 @@ export class UserController implements IController {
                     date: -1
                 });
 
-                // const notifs = await NotifModel.updateMany({ Ugh. UpdateMany doesn't return the documents updated D: sad....
-                //     shown: false,
-                //     personTo: req.payload._id
-                // }, {
-                //     shown: true
-                // });
+            await RateModel.updateMany({
+                decidedChoice: req.payload,
+                shown: false
+            }, {
+                shown: true
+            });
 
             const notifs = await NotifModel.find({
                 shown: false,
                 personTo: req.payload._id
             });
 
-            await Promise.all(
-                notifs.map(async notif => {
-                    notif.shown = true;
-                    await notif.save();
+            if (notifs.length > 0){
+                await NotifModel.updateMany({
+                    shown: false,
+                    personTo: req.payload._id
+                }, {
+                    shown: true
                 })
-            );
+            }
 
             return res.json({rates, notifs});
         }catch (e) {

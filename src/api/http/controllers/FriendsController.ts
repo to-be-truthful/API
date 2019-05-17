@@ -17,7 +17,25 @@ export class FriendsController implements IController {
             AuthMiddleware.jwtAuth.required,
             check("userId").isMongoId()
         ], this.removeFriend);
+        expressRouter.get("/friends", [
+            AuthMiddleware.jwtAuth.required
+        ], this.getFriends);
     }
+
+    private getFriends = async (req, res, next) => {
+        try {
+            await req.payload.populate({ // We will need to get the users friends
+                path: "friends",
+                select: {"email": 0, "passwordHash": 0}
+            }).execPopulate();
+
+            return res.json({
+                friends: req.payload.friends
+            });
+        } catch (e) {
+            return next(e);
+        }
+    };
 
     private addFriend = async (req, res, next) => {
         const errors = validationResult(req);

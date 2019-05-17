@@ -45,7 +45,7 @@ export default class PersonSchema extends Typegoose {
 
     /** Convert the user to a nice little json object that gets sent to the client  */
     @instanceMethod
-    public exportData(exportToken?: boolean) {
+    public exportData(skipToken?: boolean) {
         const data = {
             email: this.email,
             username: this.username,
@@ -54,7 +54,7 @@ export default class PersonSchema extends Typegoose {
             id: this._id
         };
 
-        if (exportToken){
+        if (!skipToken){
             data["token"] = this.generateToken();
         }
 

@@ -25,7 +25,7 @@ export class ProfileController implements IController {
     
     private getDetails = async (req, res, next) => {
         res.json({
-            user: req.payload.exportData(false)
+            user: req.payload.exportData(true)
         })
     };
     

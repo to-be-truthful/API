@@ -5,7 +5,7 @@ import * as passport from "passport";
 import * as zxcvbn from "zxcvbn";
 import {check, validationResult} from "express-validator/check";
 import {ValidationError} from "../ValidationError";
-import {PersonModel} from "../../../database/Person";
+import {Gender, PersonModel} from "../../../database/Person";
 import {RateModel} from "../../../database/Rate";
 import {AuthMiddleware} from "../middleware/AuthMiddleware";
 import {NotifModel} from "../../../database/Notif";
@@ -30,6 +30,15 @@ export class UserController implements IController {
             check("password").isLength({
                 min: 1, max: 50
             }),
+            check("gender").customSanitizer(value => {
+                if (value === "male"){
+                    return Gender.MALE;
+                } else if (value === "female"){
+                    return Gender.FEMALE;
+                } else {
+                    return Gender.OTHER;
+                }
+            })
         ], this.register);
         expressRouter.post("/user/login", [
             check("email").isEmail(),
@@ -139,7 +148,8 @@ export class UserController implements IController {
             lastName: req.body.lastName,
             username: req.body.username,
             email: req.body.email,
-            friends: []
+            friends: [],
+            gender: req.body.gender
         });
 
         // Update the users password

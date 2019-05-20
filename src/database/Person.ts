@@ -6,6 +6,12 @@ import * as jsonwebtoken from "jsonwebtoken";
 import * as mongoose from "mongoose";
 import {TbtAPI} from "../TbtAPI";
 
+export enum Gender {
+    MALE = "male",
+    FEMALE = "female",
+    OTHER = "other"
+}
+
 /** Manually create the ID if it isn't specified */
 @pre<PersonSchema>("save", async function (next) {
     if (this._id === undefined || this._id === null) {
@@ -21,6 +27,7 @@ export default class PersonSchema extends Typegoose {
     @prop() public lastName: string; // Person last name
     @prop() public username: string; // Username
     @prop() public email: string; // Email
+    @prop({ enum: Gender }) gender: Gender;
     @arrayProp({itemsRef: PersonSchema}) public friends: Ref<PersonSchema[]>; // Ref of user's friends IDs
 
     @prop() public passwordHash?: string; // Hashed password using bcrypt (salt included)

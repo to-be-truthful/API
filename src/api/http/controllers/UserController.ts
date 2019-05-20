@@ -181,19 +181,20 @@ export class UserController implements IController {
                         "$gte": startTime,
                         "$lt": endTime
                     }
-                }, {
-                    personFrom: 0
                 })
                 .populate({
                     path: "choices",
                     select: {"email": 0, "passwordHash": 0, "friends": 0}
                 })
                 .populate("question")
+                .populate({
+                    path: "personFrom",
+                    select: {"gender": 1}
+                })
                 .limit(500) // We don't need more then 500 posts lmao
                 .sort({ // Sort by time posted, descending
                     date: -1
                 });
-
             await RateModel.updateMany({ // Tag all rates as shown
                 decidedChoice: req.payload,
                 shown: false

@@ -11,7 +11,10 @@ export class FriendsController implements IController {
     initRoutes(expressRouter: Router) {
         expressRouter.post("/friends/add", [
             AuthMiddleware.jwtAuth.required,
-            check("userId").isMongoId()
+            check("username").isString(),
+            check("username").isLength({
+                min: 1, max: 50
+            }),
         ], this.addFriend);
         expressRouter.post("/friends/remove", [
             AuthMiddleware.jwtAuth.required,
@@ -45,7 +48,7 @@ export class FriendsController implements IController {
 
         try {
             // Try to add the friend (it will return the friend schema if it worked)
-            const targetFriend = await req.payload.addFriend(new ObjectID(req.body.userId));
+            const targetFriend = await req.payload.addFriend(req.body.username);
             await req.payload.save(); // Save the user
 
             // Send the target person a notif that someone added them

@@ -58,7 +58,8 @@ export default class PersonSchema extends Typegoose {
             username: this.username,
             firstName: this.firstName,
             lastName: this.lastName,
-            id: this._id
+            id: this._id,
+            gender: this.gender
         };
 
         if (!skipToken){
@@ -81,6 +82,7 @@ export default class PersonSchema extends Typegoose {
                 username: this.username,
                 firstName: this.firstName,
                 lastName: this.lastName,
+                gender: this.gender,
                 exp: parseInt((expirationDate.getTime() / 1000).toString(), 10)
             },
             TbtAPI.config.jwtSecret

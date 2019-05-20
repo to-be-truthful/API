@@ -99,6 +99,6 @@ export class QuestionController implements IController {
         if (friends.length <= 4) return undefined; // Make sure the user has 5+ friends
 
         const shuffled = friends.sort(() => 0.5 - Math.random()); // Shuffle the list and return 3 of them
-        return shuffled.slice(0, 3);
+        return shuffled.slice(0, 4);
     }
 }

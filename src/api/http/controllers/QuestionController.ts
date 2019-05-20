@@ -11,12 +11,16 @@ import {UpdateHandler} from "../../socket/UpdateHandler";
 
 export class QuestionController implements IController {
     initRoutes(expressRouter: Router) {
-        expressRouter.get("/rate/getNew", [AuthMiddleware.jwtAuth.required], this.getRate);
+        expressRouter.get("/rate/getNew", [AuthMiddleware.jwtAuth.required], this.getNewRate);
         expressRouter.post("/rate/finish", [
             AuthMiddleware.jwtAuth.required,
             check("rateId").isMongoId(),
             check("choiceId").isMongoId()
         ], this.rate);
+        expressRouter.post("/rate/getPast", [
+            AuthMiddleware.jwtAuth.required,
+            check("rateId").isMongoId(),
+        ], this.getRate);
     }
 
     private rate = async (req, res, next) => {
@@ -52,6 +56,36 @@ export class QuestionController implements IController {
     };
 
     private getRate = async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new ValidationError(errors.array()));
+        }
+
+        try {
+            // Get the rate
+            const rate = await RateModel.findById(new ObjectId(req.body.rateId))
+                .populate({
+                    path: "choices",
+                    select: {"email": 0, "passwordHash": 0, "friends": 0}
+                })
+                .populate("question")
+                .populate({
+                    path: "personFrom",
+                    select: {"gender": 1, "_id": 0}
+                }).orFail();
+
+            // If the user isn't the owner or the rate is already complete, throw an error
+            if ((rate.choices as Array<PersonSchema>).find(choice => choice._id.toString() === req.payload._id.toString()) === undefined) {
+                return next(new Error("You do not have access to this rate"));
+            }
+
+            return res.json({rate});
+        } catch (e) {
+            return next(e);
+        }
+    };
+
+    private getNewRate = async (req, res, next) => {
         await req.payload.populate({ // We will need to get the users friends
             path: "friends",
             select: {"email": 0, "passwordHash": 0}

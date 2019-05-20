@@ -183,13 +183,8 @@ export class UserController implements IController {
                     }
                 })
                 .populate({
-                    path: "choices",
-                    select: {"email": 0, "passwordHash": 0, "friends": 0}
-                })
-                .populate("question")
-                .populate({
                     path: "personFrom",
-                    select: {"gender": 1}
+                    select: {"gender": 1, "_id": 0}
                 })
                 .limit(500) // We don't need more then 500 posts lmao
                 .sort({ // Sort by time posted, descending

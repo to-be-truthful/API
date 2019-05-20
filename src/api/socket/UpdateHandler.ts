@@ -20,8 +20,10 @@ export class UpdateHandler {
     }
 
     public static pushUpdate = async (user: PersonSchema) => {
-        if (!UpdateHandler.activeUsers.has(user._id)) return; // No need, the user somehow isn't in the active users list.
-        const socket = UpdateHandler.activeUsers.get(user._id);
+        if (!UpdateHandler.activeUsers.has(user._id.toString())){
+            return;
+        } // No need, the user somehow isn't in the active users list.
+        const socket = UpdateHandler.activeUsers.get(user._id.toString());
         socket.emit("update");
     };
 
@@ -29,7 +31,7 @@ export class UpdateHandler {
         try {
             // Get the user and add their socket to the activeUsers map
             const user = await PersonModel.findById(new ObjectID(socket.decoded_token.id)).orFail();
-            UpdateHandler.activeUsers.set(user._id, socket);
+            UpdateHandler.activeUsers.set(user._id.toString(), socket);
 
             // Remove them on disconnect
             socket.on("disconnect", () => {

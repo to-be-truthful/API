@@ -30,13 +30,14 @@ export class QuestionController implements IController {
             const unfinishedRate = await RateModel.findById(new ObjectId(req.body.rateId)).populate("choices personFrom").orFail();
 
             // If the user isn't the owner or the rate is already complete, throw an error
-            if ((unfinishedRate.personFrom as PersonSchema)._id !== req.payload._id || unfinishedRate.decidedChoice) {
+            if ((unfinishedRate.personFrom as PersonSchema)._id.toString() !== req.payload._id.toString() || unfinishedRate.decidedChoice !== undefined) {
                 return next(new Error("You do not have access to this rate"));
             }
 
             // Get the user they selected
             const choice = (unfinishedRate.choices as Array<PersonSchema>).find(person => person._id.toString() === req.body.choiceId.toString());
             if (!choice) { // Make sure it wasn't an invalid choice
+                console.log(unfinishedRate.choices)
                 return next(new Error("Invalid choice"));
             }
 

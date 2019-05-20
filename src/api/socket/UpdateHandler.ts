@@ -20,7 +20,7 @@ export class UpdateHandler {
     }
 
     public static pushUpdate = async (user: PersonSchema) => {
-        if (!UpdateHandler.activeUsers.has(user._id.toString())){
+        if (!UpdateHandler.activeUsers.has(user._id.toString())) {
             return;
         } // No need, the user somehow isn't in the active users list.
         const socket = UpdateHandler.activeUsers.get(user._id.toString());

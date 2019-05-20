@@ -41,7 +41,7 @@ export class QuestionController implements IController {
             // Get the user they selected
             const choice = (unfinishedRate.choices as Array<PersonSchema>).find(person => person._id.toString() === req.body.choiceId.toString());
             if (!choice) { // Make sure it wasn't an invalid choice
-                console.log(unfinishedRate.choices)
+                console.log(unfinishedRate.choices);
                 return next(new Error("Invalid choice"));
             }
 

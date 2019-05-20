@@ -15,8 +15,8 @@ import {ValidationError} from "./api/http/ValidationError";
 import {FriendsController} from "./api/http/controllers/FriendsController";
 import {UpdateHandler} from "./api/socket/UpdateHandler";
 import {RemovalHelper} from "./helpers/RemovalHelper";
-import ExpressValidator = require("express-validator");
 import {ProfileController} from "./api/http/controllers/ProfileController";
+import ExpressValidator = require("express-validator");
 
 export class TbtAPI {
     private _express: Express.Express;

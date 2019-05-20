@@ -31,9 +31,9 @@ export class UserController implements IController {
                 min: 1, max: 50
             }),
             check("gender").customSanitizer(value => {
-                if (value === "male"){
+                if (value === "male") {
                     return Gender.MALE;
-                } else if (value === "female"){
+                } else if (value === "female") {
                     return Gender.FEMALE;
                 } else {
                     return Gender.OTHER;

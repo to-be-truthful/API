@@ -27,7 +27,7 @@ export default class PersonSchema extends Typegoose {
     @prop() public lastName: string; // Person last name
     @prop() public username: string; // Username
     @prop() public email: string; // Email
-    @prop({ enum: Gender }) gender: Gender;
+    @prop({enum: Gender}) gender: Gender;
     @arrayProp({itemsRef: PersonSchema}) public friends: Ref<PersonSchema[]>; // Ref of user's friends IDs
 
     @prop() public passwordHash?: string; // Hashed password using bcrypt (salt included)
@@ -62,7 +62,7 @@ export default class PersonSchema extends Typegoose {
             gender: this.gender
         };
 
-        if (!skipToken){
+        if (!skipToken) {
             data["token"] = this.generateToken();
         }
 

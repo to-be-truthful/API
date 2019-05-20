@@ -7,10 +7,10 @@ import {ValidationError} from "../ValidationError";
 
 export class ProfileController implements IController {
     initRoutes(expressRouter: Router) {
-        expressRouter.get("profile/details", [
+        expressRouter.get("/profile/details", [
             AuthMiddleware.jwtAuth.required
         ], this.getDetails);
-        expressRouter.post("profile/changePassword", [
+        expressRouter.post("/profile/changePassword", [
             AuthMiddleware.jwtAuth.required,
             check("oldPassword").isString(),
             check("oldPassword").isLength({

@@ -79,6 +79,9 @@ export class QuestionController implements IController {
                 return next(new Error("You do not have access to this rate"));
             }
 
+            rate.shown = true;
+            await rate.save();
+
             return res.json({rate});
         } catch (e) {
             return next(e);

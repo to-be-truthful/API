@@ -190,12 +190,6 @@ export class UserController implements IController {
                 .sort({ // Sort by time posted, descending
                     date: -1
                 });
-            await RateModel.updateMany({ // Tag all rates as shown
-                decidedChoice: req.payload,
-                shown: false
-            }, {
-                shown: true
-            });
 
             const notifs = await NotifModel.find({ // Get all unshown notifs
                 shown: false,

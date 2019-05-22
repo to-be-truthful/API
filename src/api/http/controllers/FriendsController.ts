@@ -15,6 +15,9 @@ export class FriendsController implements IController {
             check("username").isLength({
                 min: 1, max: 50
             }),
+            check("username").customSanitizer(value => {
+                return value.toLowerCase();
+            })
         ], this.addFriend);
         expressRouter.post("/friends/remove", [
             AuthMiddleware.jwtAuth.required,

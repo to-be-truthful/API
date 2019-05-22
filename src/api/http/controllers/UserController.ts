@@ -25,6 +25,9 @@ export class UserController implements IController {
             check("username").isLength({
                 min: 1, max: 50
             }),
+            check("username").customSanitizer(value => {
+                return value.toLowerCase();
+            }),
             check("email").isEmail(),
             check("password").isString(),
             check("password").isLength({

@@ -172,18 +172,10 @@ export class UserController implements IController {
     };
 
     private getFeed = async (req, res, next) => {
-        let startTime = new Date(); // Make sure that we don't show posts more then 5 days old
-        startTime.setDate(startTime.getDate() - 5);
-        let endTime = new Date(Date.now());
-
         try {
             const rates = await RateModel
                 .find({
-                    decidedChoice: req.payload,
-                    date: {
-                        "$gte": startTime,
-                        "$lt": endTime
-                    }
+                    decidedChoice: req.payload
                 })
                 .populate({
                     path: "personFrom",
